@@ -1,3 +1,4 @@
+import json
 from bs4 import BeautifulSoup
 import urllib.request
 from itertools import zip_longest, product
@@ -12,8 +13,16 @@ class Product:
     def show(self):
         print(f"{self.name} | {self.price} | {self.img_url}")
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "price": self.price,
+            "img_url": self.img_url
+        }
+
 def request():
     hdr = {'User-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/603.1.23 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1'}
+    all_data = []
     for n in range(1, 3):
         data = 'https://labgolfkorea.com/product/list.html?cate_no=55&page=' + str(n)
         #print('접속 URL:', data)
@@ -40,7 +49,12 @@ def request():
 
         for data in datalist:
             data.show()
-            #print(data.name, data.price, data.img_url)
+            all_data.append(data.to_dict())
+
+    #with open .. as f 파일열고 작업끝나면 자동으로 닫아줌
+    with open("products.json", "w", encoding="utf-8") as f:
+        json.dump(all_data, f, ensure_ascii=False, indent=4)
+    #print(data.name, data.price, data.img_url)
 
 
 if __name__ == "__main__":
